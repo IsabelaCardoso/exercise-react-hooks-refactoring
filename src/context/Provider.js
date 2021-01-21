@@ -1,63 +1,42 @@
-// src/context/Provider.js
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import CarsContext from './CarsContext';
+import redSignal from '../images/redSignal.jpeg';
+import yellowSignal from '../images/yellowSignal.jpeg';
+import greenSignal from '../images/greenSignal.jpeg';
 
-class Provider extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      cars: {
-        red: false,
-        blue: false,
-        yellow: false,
-      },
-      signal: {
-        color: 'red',
-      },
-    }
-    this.moveCar = this.moveCar.bind(this);
-    this.changeSignal = this.changeSignal.bind(this);
-  }
 
-  moveCar(car, side) {
-    this.setState({
-      cars: {
-        ...this.state.cars,
-        [car]: side,
-      },
-    });
+function Provider({ children }) {
+  const [cars, setCars] = useState({ red: false, blue: false, yellow: false});
+  const [signal, setSignal] = useState({ color: 'red' });
+
+  const moveCar = (car, side) => {
+    setCars({...cars, [car]: side });
   };
 
-  changeSignal(signalColor) {
-    this.setState({
-      signal: {
-        ...this.state.signal,
-        color: signalColor,
-      },
-    });
+  const changeSignal = (signalColor) => {
+    setSignal({...signal, color: signalColor});
   };
 
-  render() {
-    const context = {
-      ...this.state,
-      moveCar: this.moveCar,
-      changeSignal: this.changeSignal,
-    };
+  const renderSignal = (signalColor) => {
+    if (signalColor === 'red') return redSignal;
+    if (signalColor === 'yellow') return yellowSignal;
+    if (signalColor === 'green') return greenSignal;
+    return null;
+  };
 
-    const { children } = this.props;
+  const context = {
+    cars,
+    signal,
+    moveCar,
+    changeSignal,
+    renderSignal,
+  };
 
-    return (
-      <CarsContext.Provider value={context}>
-        {children}
-      </CarsContext.Provider>
-    );
-  }
-};
-
-Provider.propTypes = {
-  children: PropTypes.node.isRequired,
+  return (
+    <CarsContext.Provider value={context}>
+      {children}
+    </CarsContext.Provider>
+  );
 };
 
 export default Provider;
